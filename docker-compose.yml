@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  web:
+    build:
+      context: .
+      no_cache: true
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./uploads:/app/uploads
+    depends_on:
+      - db
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: 'mydatabase'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'password'
+    volumes:
+      - mydb:/var/lib/mysql
+
+volumes:
+  mydb:
