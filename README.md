@@ -1,0 +1,2 @@
+# lab_message_app
+研究室のlocalメッセージアプリを作成していく
