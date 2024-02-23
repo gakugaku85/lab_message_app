@@ -1,25 +1,84 @@
-version: '3'
+version: '3.8'
+networks:
+  mynet:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.39.0.0/24
 
 services:
-  web:
+  run_html:
+    image: run_html
+    container_name: run_html
+    hostname: run_html
     build:
-      context: .
+      context: ./html_docker
+      dockerfile: Dockerfile
       no_cache: true
     ports:
-      - "5001:5000"
+      - "8080:8080"
     volumes:
-      - ./uploads:/app/uploads
+      - type: bind
+        source: ./
+        target: /app
     depends_on:
-      - db
-  db:
-    image: mysql:5.7
+      - slack_bot
+    working_dir: /app
+    restart: always
     environment:
-      MYSQL_DATABASE: 'mydatabase'
-      MYSQL_USER: 'user'
-      MYSQL_PASSWORD: 'password'
-      MYSQL_ROOT_PASSWORD: 'password'
-    volumes:
-      - mydb:/var/lib/mysql
+      - TZ=Asia/Tokyo
+    command: python3 -u run_html.py -c config.json
+    networks:
+      mynet:
+        ipv4_address: 172.39.0.7
 
-volumes:
-  mydb:
+  slack_bot:
+    image: slack_bot
+    container_name: run_slack_bot
+    hostname: run_slack_bot
+    build:
+      context: ./slack_docker
+      dockerfile: Dockerfile
+      no_cache: true
+    restart: always
+    depends_on:
+      - mysql
+    volumes:
+      - type: bind
+        source: ./
+        target: /app
+    environment:
+      - TZ=Asia/Tokyo
+    working_dir: /app
+    command: python3 -u slack_load.py
+    networks:
+      mynet:
+        ipv4_address: 172.39.0.32
+
+  mysql:
+    image: mysql:8.0.29-oracle
+    container_name: run_mysql
+    hostname: run_mysql
+    environment:
+      TZ: 'Asia/Tokyo'
+      MYSQL_DATABASE: gakuDB
+      MYSQL_USER: gaku
+      MYSQL_PASSWORD: sekigaku85
+      MYSQL_ROOT_PASSWORD: sekigaku85
+    volumes:
+      - ./mysql/db:/var/lib/mysql
+      - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf:ro
+      - /usr/share/zoneinfo/Asia/Tokyo:/etc/localtime:ro
+    ports:
+      - "3306:3306"
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    restart: always
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      mynet:
+        ipv4_address: 172.39.0.40
