@@ -14,3 +14,5 @@ rmnetwork:
 	docker network rm lab_message_app_mynet
 build:
 	docker-compose build --no-cache
+reboot:
+	make stop && docker-compose rm -f && docker network rm lab_message_app_mynet && make start
