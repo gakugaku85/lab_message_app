@@ -160,6 +160,7 @@ cython_debug/
 #.idea/
 
 api_keys.py
+config.json
 mysql/*
 uploads/*
 ```
