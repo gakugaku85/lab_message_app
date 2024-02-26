@@ -8,15 +8,15 @@ from flask import Flask, render_template, request
 
 import apis.page as page
 
-def main(sql_host, sql_user, sql_pass):
+def main(sql_host, sql_user, sql_pass, sql_db):
 
     app = Flask(__name__)
-    # page.define(app, sql_host, sql_user, sql_pass)
+    page.define(app, sql_host, sql_user, sql_pass, sql_db)
 
     @app.route("/")
     @app.route("/page")
     def page_log():
-        return render_template("index.html")
+        return render_template("index.html", messages=[])
 
     app.run(host="0.0.0.0", port=8080, debug=True)
 
@@ -30,4 +30,4 @@ if __name__ == "__main__":
     with open(args.config, "r", encoding="utf-8") as f:
         config = json.load(f)
 
-    main(config["sql_host"], config["sql_user"], config["sql_pass"])
+    main(config["sql_host"], config["sql_user"], config["sql_pass"], config["sql_db"])
