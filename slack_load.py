@@ -44,6 +44,8 @@ def insert_message(event):
         database=config["sql_db"],
     )
 
+    print(event)
+
     cursor = connection.cursor()
     cursor.execute(
         "INSERT INTO slack.messages (message, user, timestamp) VALUES (%s, %s, %s)",

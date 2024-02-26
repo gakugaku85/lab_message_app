@@ -9,6 +9,7 @@ RUN apt-get update -y && \
     python3-setuptools \
     nano \
     tzdata \
+    git \
     && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
 

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <h1>Chat App</h1>
+    <div id="messages">
+        <!-- チャットを表示する領域 -->
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // ページが読み込まれたときにAjaxリクエストを送信してチャットを取得
+            $.getJSON('/chat', function(data) {
+                // チャットを表示
+                data.forEach(function(item) {
+                    $('#messages').prepend('<div><strong>' + item.user + '</strong>: ' + item.message + '</div>');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

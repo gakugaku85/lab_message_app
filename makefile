@@ -8,6 +8,8 @@ rm:
 	docker-compose rm && make rmnetwork
 rmi:
 	docker rmi slack_bot run_html mysql
+logs:
+	docker-compose logs -f
 ps:
 	docker-compose ps
 rmnetwork:

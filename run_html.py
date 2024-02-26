@@ -11,12 +11,12 @@ import apis.page as page
 def main(sql_host, sql_user, sql_pass, sql_db):
 
     app = Flask(__name__)
-    page.define(app, sql_host, sql_user, sql_pass, sql_db)
+    msg = page.define(app, sql_host, sql_user, sql_pass, sql_db)
 
     @app.route("/")
-    @app.route("/page")
-    def page_log():
-        return render_template("index.html", messages=[])
+    @app.route("/msg")
+    def page_msg():
+        return render_template("index.html")
 
     app.run(host="0.0.0.0", port=8080, debug=True)
 
