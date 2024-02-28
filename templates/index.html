@@ -54,7 +54,7 @@
                 $.getJSON("/get_channels", function (data) {
                   data.forEach(function (item) {
                     $("#channels").append(
-                      '<li><a href="#'+item+'"><i class="fas fa-hashtag"></i>' +
+                      '<li><a href="/msg?channel='+item+'"><i class="fas fa-hashtag"></i>' +
                         item +
                         "</a></li>"
                     );
@@ -65,26 +65,14 @@
             </section>
           </article>
         </section>
+
         <section class="body">
           <section class="content">
             <section class="content-header">
               <article class="channel-content-header-details">
                 <h4 class="channel-content-header-name">
-                  #social-media <i class="fas fa-star"></i>
+                  {{ channel_name }}
                 </h4>
-                <section class="content-header-icons">
-                  <div>
-                    <i class="far fa-user"></i
-                    ><span class="content-header-counter">23</span>
-                  </div>
-                  <div>
-                    <i class="fas fa-thumbtack fa-rotate-315 last"></i
-                    ><span class="content-header-counter">23</span>
-                  </div>
-                  <p class="content-header-text">
-                    Track and cordinate social media.
-                  </p>
-                </section>
               </article>
               <button
                 class="btn-borderless btn-slack info"
@@ -94,77 +82,22 @@
                 <i class="fas fa-info-circle"></i>
               </button>
             </section>
-            <section class="feeds">
-              <article class="feed">
-                <section class="feed-content">
-                  <section class="feed-user-info">
-                    <h4>Zeo Maxwell <span class="time-stamp">9:56am</span></h4>
-                  </section>
-                  <div>
-                    <p class="feed-text">
-                      No! It was my pleasure! Great to see the enthusiasm out
-                      there.
-                    </p>
-                  </div>
-                </section>
-              </article>
-              <article class="feed">
-                <section class="feed-content">
-                  <section class="feed-user-info">
-                    <h4>
-                      Acme Team <span class="tag">app</span>
-                      <span class="time-stamp">12:45pm</span>
-                    </h4>
-                  </section>
-
-                  <p class="feed-text">Events starting in 15 minutes:</p>
-                  <div class="quoted">
-                    <h5>Team status meeting</h5>
-                    <p class="quoted-text">Today from 1:00PM to 1:30PM</p>
-                  </div>
-                </section>
-              </article>
-              <article class="feed">
-                <section class="feed-content">
-                  <section class="feed-user-info">
-                    <h4>Hary Boone <span class="time-stamp">12:58pm</span></h4>
-                  </section>
-                  <div>
-                    <p class="feed-text">
-                      Quick note: today <span class="mention">@lisa</span> will
-                      join our team sync to provide updates on the launch, if
-                      you have questions, bring 'em. See you all later...er, in
-                      2 minutes.
-                    </p>
-                  </div>
-                </section>
-              </article>
-              <article class="feed">
-                <section class="feed-content">
-                  <section class="feed-user-info">
-                    <h4>Lee Hao <span class="time-stamp">1:48pm</span></h4>
-                  </section>
-                  <p class="feed-text">
-                    Meeting notes from our sync with<span class="mention"
-                      >@lisa</span
-                    >.
-                  </p>
-                  <div class="quoted-file">
-                    <div class="preparatory-text">
-                      <p>Post</p>
-                      <i class="fas fa-sort-down"></i>
+            <article class="feeds">
+              {% for message in messages %}
+                <section class="feed">
+                  <section class="feed-content">
+                    <section class="feed-user-info">
+                      <h4>{{ message.user }} <span class="time-stamp">{{ message.time }}</span></h4>
+                    </section>
+                    <div>
+                      <p class="feed-text">
+                        {{ message.message }}
+                      </p>
                     </div>
-                    <div class="file-figure">
-                      <i class="far fa-file-alt fa-2x"></i>
-                      <div class="file-detail">
-                        <h5>1/9 Meeting Notes</h5>
-                        <small>Last edited just now</small>
-                      </div>
-                    </div>
-                  </div>
+                  </section>
                 </section>
-              </article>
-            </section>
+              {% endfor %}
+            </article>
           </section>
         </section>
       </main>

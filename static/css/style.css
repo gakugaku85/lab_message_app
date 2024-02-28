@@ -140,6 +140,14 @@ body {
   overflow: hidden;
 }
 
+#col-rev {
+  flex-direction: column-reverse;
+}
+
+#col {
+  flex-direction: column;
+}
+
 blockquote {
   quotes: none;
 }
@@ -687,6 +695,8 @@ body::-webkit-scrollbar-thumb {
   grid-area: main;
   overflow: auto;
   padding: 0.9375rem 0.3125rem 0.625rem 0.3125rem;
+  display: flex;
+  flex-direction: column-reverse;
 }
 
 .feed {
@@ -1572,9 +1582,7 @@ body::-webkit-scrollbar-thumb {
 }
 @media (min-width: 800px) {
   .feeds {
-    display: grid;
-    justify-content: center;
-    align-items: center;
+    padding: 0.9375rem 0.3125rem 0.625rem 0.3125rem;
   }
 }
 

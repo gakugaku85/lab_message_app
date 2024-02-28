@@ -20,3 +20,5 @@ reboot:
 	make stop && docker-compose rm -f && docker network rm lab_message_app_mynet && make start
 rebot:
 	docker-compose stop run_html && docker-compose rm -f run_html && make start
+stats:
+	docker stats $(docker ps --format={{.Names}})
