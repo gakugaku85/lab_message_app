@@ -30,7 +30,7 @@ def main(sql_host, sql_user, sql_pass, sql_db):
 
         cursor = connection.cursor()
         cursor.execute(
-            f"SELECT user, message, timestamp FROM slack.{channel_name} ORDER BY timestamp DESC LIMIT 10"
+            f"SELECT user, message, timestamp FROM slack.{channel_name} ORDER BY timestamp DESC LIMIT 50"
         )
 
         messages = []
