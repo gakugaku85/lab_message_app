@@ -18,8 +18,8 @@ slackの文章を記録し、表示するwebアプリを作成する
 slackを監視して、DBに蓄積していく
 
 ## run_html
-個人用PCから状態を確認できるように5000ポートで解放する．
-`\\<サーバーのIPアドレス>:5000`でアクセスできる．
+個人用PCから状態を確認できるように8080ポートで解放する．
+`\\<サーバーのIPアドレス>:8080`でアクセスできる．
 
 ## run_mysql
 slack_botで得た値を保存する．
@@ -32,25 +32,14 @@ dockerがsudo権限で動いているため，ファイルアクセスにはsudo
 
 # 環境構築
 ## Dockerのインストール
+macやwindowsの場合はDocker Desktopが入ってればok
+
+linuxの場合
 https://docs.docker.com/install/linux/docker-ce/ubuntu/ に書いてあり通りにやる
 ```
-sudo apt-get update
-sudo apt-get install -y \
-     apt-transport-https \
-     ca-certificates \
-     curl \
-     gnupg-agent \
-     software-properties-common
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo apt-key fingerprint 0EBFCD88
-sudo add-apt-repository \
-     "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-     $(lsb_release -cs) \
-     stable"
-sudo apt-get update
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 sudo docker run hello-world
 ```
+これができればok
 
 ## docker-composeのインストール
 参考
@@ -119,6 +108,15 @@ make rmi
 ただしコンテナの起動はされないので，改めて`make start`する必要がある．
 ```
 make build
+```
+
+## api_keys.py
+以下のファイルを作成し、記述する
+tokenの取得は調べてください
+
+```
+SLACK_API_TOKEN = "xapp ..."
+SLACK_BOT_USER_TOKEN = "xoxb ..."
 ```
 
 <!--

@@ -121,7 +121,10 @@ def find_username_by_id(user_id: str) -> str:
         f"https://slack.com/api/users.profile.get?user={user_id}",
         headers={"Content-Type": "application/json", "Authorization": f"Bearer {get_bot_api_token()}"},
     )
-    return response.json()["profile"]["real_name"]
+    if response.json()["profile"]["display_name"] != "":
+        return response.json()["profile"]["display_name"]
+    else:
+        return response.json()["profile"]["real_name"]
 
 def find_channel_name_by_id(channel_id: str, connection) -> str:
     cursor = connection.cursor()

@@ -1,6 +1,6 @@
 {
     "sql_host" : "172.39.0.40",
     "sql_user" : "root",
-    "sql_pass" : "sekigaku85",
-    "sql_db" : "gakuDB"
+    "sql_pass" : "password",
+    "sql_db" : "DB"
 }

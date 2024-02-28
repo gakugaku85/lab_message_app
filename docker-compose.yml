@@ -62,10 +62,10 @@ services:
     hostname: run_mysql
     environment:
       TZ: 'Asia/Tokyo'
-      MYSQL_DATABASE: gakuDB
-      MYSQL_USER: gaku
-      MYSQL_PASSWORD: sekigaku85
-      MYSQL_ROOT_PASSWORD: sekigaku85
+      MYSQL_DATABASE: DB
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
     volumes:
       - ./mysql/db:/var/lib/mysql
       - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf:ro
