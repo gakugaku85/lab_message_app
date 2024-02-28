@@ -18,7 +18,7 @@ def main(sql_host, sql_user, sql_pass, sql_db):
     def page_msg():
         return render_template("index.html")
 
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    app.run(host="0.0.0.0", port=8080, debug=False, threaded=True)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

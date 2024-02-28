@@ -23,14 +23,40 @@ def initialize_database(sql_host, sql_user, sql_password, sql_database, channel_
         password=sql_password,
         database=sql_database,
     )
+    cursor = connection.cursor()
 
-    commands = ["CREATE DATABASE IF NOT EXISTS slack"]
+    init_commands = ["CREATE DATABASE IF NOT EXISTS slack"]
+
+
+    channels_create = f"""CREATE TABLE IF NOT EXISTS slack.channels (
+    id VARCHAR(255),
+    name VARCHAR(255),
+    is_archived BOOLEAN,
+    updated BIGINT,
+    num_members INT
+    );"""
+
+    init_commands.append(channels_create)
+
+    for command in init_commands:
+        try:
+            cursor.execute(command)
+        except Exception:
+            traceback.print_exc()
+
+    commands = []
 
     for channel in channel_list["channels"]:
         if channel["is_archived"] == False:
             commands.append(f"CREATE TABLE IF NOT EXISTS slack.{channel['name']} (user VARCHAR(255), message TEXT, timestamp TIMESTAMP, type VARCHAR(255), client_msg_id VARCHAR(255), team VARCHAR(255), thread_ts VARCHAR(255), parent_user_id VARCHAR(255), blocks TEXT, channel VARCHAR(255), event_ts VARCHAR(255), channel_type VARCHAR(255))")
 
-    cursor = connection.cursor()
+            # channel_idを検索し更新、なければ追加する
+            find_command = f"SELECT * FROM slack.channels WHERE id = '{channel['id']}'"
+            cursor.execute(find_command)
+            result = cursor.fetchone()
+            if result is None:
+                commands.append(f"INSERT INTO slack.channels (id, name, is_archived, updated, num_members) VALUES ('{channel['id']}', '{channel['name']}', {channel['is_archived']}, {channel['updated']}, {channel['num_members']})")
+
     for command in commands:
         try:
             cursor.execute(command)
@@ -48,9 +74,12 @@ def insert_message(event):
         database=config["sql_db"],
     )
 
-    #もしeventにthread_tsがあれば、以下のコマンドでDBに追加する
+    print(event)
+    event_channel_name = find_channel_name_by_id(event["channel"], connection)
+
+    # もしeventにthread_tsがあれば、以下のコマンドでDBに追加する
     if "thread_ts" in event:
-        command = "INSERT INTO slack.lab_general (user, message, timestamp, type, client_msg_id, team, thread_ts, parent_user_id, blocks, channel, event_ts, channel_type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        command = f"INSERT INTO slack.{event_channel_name} (user, message, timestamp, type, client_msg_id, team, thread_ts, parent_user_id, blocks, channel, event_ts, channel_type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         args = (event["user"], event["text"],
                 datetime.fromtimestamp(float(event["ts"])),
                 event["type"], event["client_msg_id"],
@@ -60,9 +89,8 @@ def insert_message(event):
                 event["channel"],
                 event["event_ts"],
                 event["channel_type"])
-
     else:
-        command = "INSERT INTO slack.lab_general (user, message, timestamp, type, client_msg_id, team, thread_ts, parent_user_id, blocks, channel, event_ts, channel_type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        command = f"INSERT INTO slack.{event_channel_name}  (user, message, timestamp, type, client_msg_id, team, thread_ts, parent_user_id, blocks, channel, event_ts, channel_type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         args = (event["user"], event["text"],
                 datetime.fromtimestamp(float(event["ts"])),
                 event["type"], event["client_msg_id"],
@@ -94,6 +122,15 @@ def find_username_by_id(user_id: str) -> str:
         headers={"Content-Type": "application/json", "Authorization": f"Bearer {get_bot_api_token()}"},
     )
     return response.json()["profile"]["real_name"]
+
+def find_channel_name_by_id(channel_id: str, connection) -> str:
+    cursor = connection.cursor()
+    command = f"SELECT name FROM slack.channels WHERE id = '{channel_id}'"
+    cursor.execute(command)
+    result = cursor.fetchone()
+    cursor.close()
+    return result[0]
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
