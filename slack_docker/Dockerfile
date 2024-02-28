@@ -1,5 +1,6 @@
 FROM ubuntu:20.04
 
+RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 RUN apt-get update -y && \
     apt-get install -y --no-install-recommends \
     sudo \
