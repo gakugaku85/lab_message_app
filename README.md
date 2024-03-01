@@ -27,6 +27,14 @@ slack_botで得た値を保存する．
 データベースはこのディレクトリの"`./mysql/db`"に保存される．[docker-compose.yml](docker-compose.yml)の`./mysql/db:/var/lib/mysql`でマウント先を変えることも可能．
 dockerがsudo権限で動いているため，ファイルアクセスにはsudo権限が必要(mysqlはsudo権限で動いているため，mysqlには普通にアクセス可能)
 
+## api_keys.py
+ファイルを作成し、以下を記述する
+slack botのtokenの取得は調べてください
+
+```
+SLACK_API_TOKEN = "xapp ..."
+SLACK_BOT_USER_TOKEN = "xoxb ..."
+```
 
 <br>
 
@@ -110,13 +118,9 @@ make rmi
 make build
 ```
 
-## api_keys.py
-以下のファイルを作成し、記述する
-tokenの取得は調べてください
-
+## 全て作り直し
 ```
-SLACK_API_TOKEN = "xapp ..."
-SLACK_BOT_USER_TOKEN = "xoxb ..."
+make reboot
 ```
 
 <!--

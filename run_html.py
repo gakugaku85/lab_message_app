@@ -1,6 +1,4 @@
 import argparse
-import copy
-import getpass
 import json
 
 import mysql.connector as sqllib
@@ -30,7 +28,7 @@ def main(sql_host, sql_user, sql_pass, sql_db):
 
         cursor = connection.cursor()
         cursor.execute(
-            f"SELECT user, message, timestamp FROM slack.{channel_name} ORDER BY timestamp DESC LIMIT 50"
+            f"SELECT user, message, timestamp FROM slack.{channel_name} ORDER BY timestamp DESC LIMIT 20"
         )
 
         messages = []
