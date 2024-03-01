@@ -63,9 +63,9 @@ services:
     environment:
       TZ: 'Asia/Tokyo'
       MYSQL_DATABASE: DB
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
-      MYSQL_ROOT_PASSWORD: password
+      MYSQL_USER: root
+      MYSQL_PASSWORD: sekigaku85
+      MYSQL_ROOT_PASSWORD: sekigaku85
     volumes:
       - ./mysql/db:/var/lib/mysql
       - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf:ro
