@@ -13,6 +13,13 @@ def main(sql_host, sql_user, sql_pass, sql_db):
     app = Flask(__name__)
     msg = page.define(app, sql_host, sql_user, sql_pass, sql_db)
 
+    sql_info = {
+        "host": sql_host,
+        "user": sql_user,
+        "password": sql_pass,
+        "database": sql_db,
+    }
+
     @app.route("/")
     @app.route("/msg")
     def page_msg():
@@ -23,7 +30,6 @@ def main(sql_host, sql_user, sql_pass, sql_db):
             database=sql_db,
         )
 
-        channel_name = "lab_general"
         channel_name = request.args.get("channel", "", type=str)
 
         cursor = connection.cursor()
@@ -31,10 +37,12 @@ def main(sql_host, sql_user, sql_pass, sql_db):
             f"SELECT user, message, timestamp FROM slack.{channel_name} ORDER BY timestamp DESC LIMIT 20"
         )
 
-        messages = []
-        for user, message, timestamp in cursor:
-            messages.append({"user": find_username_by_id(user), "message": message, "time": timestamp})
+        reslist = cursor.fetchall()
         cursor.close()
+
+        messages = []
+        for user, message, timestamp in reslist:
+            messages.append({"user_id": user, "user_name": find_username_by_id(user, connection), "message": message, "time": timestamp})
         connection.close()
         return render_template("index.html", messages=messages, channel_name=channel_name)
 

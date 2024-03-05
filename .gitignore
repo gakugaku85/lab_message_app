@@ -162,4 +162,5 @@ cython_debug/
 api_keys.py
 mysql/*
 uploads/*
+static/images/*
 ```

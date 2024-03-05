@@ -7,6 +7,7 @@ from slack_bolt.adapter.socket_mode import SocketModeHandler
 import traceback
 import argparse
 import json
+import os
 
 import api_keys
 
@@ -17,6 +18,7 @@ def get_slack_api_token():
     return api_keys.SLACK_API_TOKEN
 
 def initialize_database(sql_host, sql_user, sql_password, sql_database):
+    os.makedirs("images", exist_ok=True)
     connection = mysql.connector.connect(
         host=sql_host,
         user=sql_user,
@@ -35,7 +37,15 @@ def initialize_database(sql_host, sql_user, sql_password, sql_database):
     num_members INT
     );"""
 
+    users_create = f"""CREATE TABLE IF NOT EXISTS slack.users (
+    id VARCHAR(255),
+    real_name VARCHAR(255),
+    display_name VARCHAR(255),
+    image_url VARCHAR(255)
+    );"""
+
     init_commands.append(channels_create)
+    init_commands.append(users_create)
 
     for command in init_commands:
         try:
@@ -56,6 +66,7 @@ def insert_message(event):
 
     print(event)
     event_channel_name = find_channel_name_by_id(event["channel"], connection)
+    find_username_by_id(event["user"], connection)
 
     # もしeventにthread_tsがあれば、以下のコマンドでDBに追加する
     if "thread_ts" in event:
@@ -90,7 +101,7 @@ def insert_message(event):
     cursor.close()
     connection.close()
 
-def find_username_by_id(user_id: str) -> str:
+def get_username_by_slack_id(user_id):
     response = requests.get(
         f"https://slack.com/api/users.profile.get?user={user_id}",
         headers={
@@ -98,10 +109,39 @@ def find_username_by_id(user_id: str) -> str:
             "Authorization": f"Bearer {get_bot_api_token()}",
         },
     )
-    if response.json()["profile"]["display_name"] != "":
-        return response.json()["profile"]["display_name"]
+
+    img_url = response.json()["profile"]["image_48"]
+    urlData = requests.get(img_url).content
+
+    with open(f"/static/images/{user_id}.png", "wb") as f:
+        f.write(urlData)
+
+    return (
+        response.json()["profile"]["real_name"],
+        response.json()["profile"]["display_name"],
+        img_url,
+    )
+
+def find_username_by_id(user_id, connection) -> str:
+    cursor = connection.cursor()
+    command = f"SELECT real_name, display_name FROM slack.users WHERE id = '{user_id}'"
+    cursor.execute(command)
+    result = cursor.fetchall()
+    if result == []:
+        real_name, display_name, img_url = get_username_by_slack_id(user_id)
+        command = f"INSERT INTO slack.users (id, real_name, display_name, image_url) VALUES ('{user_id}', '{real_name}', '{display_name}', '{img_url}')"
+        try:
+            cursor.execute(command)
+        except Exception:
+            traceback.print_exc()
+        connection.commit()
     else:
-        return response.json()["profile"]["real_name"]
+        real_name, display_name = result[0]
+        connection.commit()
+
+    cursor.close()
+
+    return display_name if display_name else real_name
 
 
 def find_channel_info_by_id(channel_id: str) -> str:

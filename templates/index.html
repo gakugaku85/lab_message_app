@@ -85,9 +85,14 @@
             <article class="feeds">
               {% for message in messages %}
                 <section class="feed">
+                  <section class="feeds-user-avatar">
+                    <img src="/static/images/{{ message.user_id }}.png" alt="user-avatar" width="40" />
+                  </section>
                   <section class="feed-content">
                     <section class="feed-user-info">
-                      <h4>{{ message.user }} <span class="time-stamp">{{ message.time }}</span></h4>
+                      <h4>{{ message.user_name }}
+                        <span class="time-stamp">{{ message.time }}</span>
+                      </h4>
                     </section>
                     <div>
                       <p class="feed-text">
