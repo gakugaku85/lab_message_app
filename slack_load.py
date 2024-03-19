@@ -18,7 +18,7 @@ def get_slack_api_token():
     return api_keys.SLACK_API_TOKEN
 
 def initialize_database(sql_host, sql_user, sql_password, sql_database):
-    os.makedirs("images", exist_ok=True)
+    os.makedirs("/app/static/images", exist_ok=True)
     connection = mysql.connector.connect(
         host=sql_host,
         user=sql_user,
@@ -111,9 +111,10 @@ def get_username_by_slack_id(user_id):
     )
 
     img_url = response.json()["profile"]["image_48"]
+    print(img_url)
     urlData = requests.get(img_url).content
 
-    with open(f"/static/images/{user_id}.png", "wb") as f:
+    with open(f"/app/static/images/{user_id}.png", "wb") as f:
         f.write(urlData)
 
     return (
@@ -127,7 +128,8 @@ def find_username_by_id(user_id, connection) -> str:
     command = f"SELECT real_name, display_name FROM slack.users WHERE id = '{user_id}'"
     cursor.execute(command)
     result = cursor.fetchall()
-    if result == []:
+
+    if result == [] or "/app/static/images/" + user_id + ".png" not in os.listdir("/app/static/images"):
         real_name, display_name, img_url = get_username_by_slack_id(user_id)
         command = f"INSERT INTO slack.users (id, real_name, display_name, image_url) VALUES ('{user_id}', '{real_name}', '{display_name}', '{img_url}')"
         try:

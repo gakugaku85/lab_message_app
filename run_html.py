@@ -3,7 +3,7 @@ import json
 
 import mysql.connector as sqllib
 from flask import Flask, render_template, request
-
+import markdown2
 from slack_load import find_username_by_id
 
 import apis.page as page
@@ -42,7 +42,7 @@ def main(sql_host, sql_user, sql_pass, sql_db):
 
         messages = []
         for user, message, timestamp in reslist:
-            messages.append({"user_id": user, "user_name": find_username_by_id(user, connection), "message": message, "time": timestamp})
+            messages.append({"user_id": user, "user_name": find_username_by_id(user, connection), "message": markdown2.markdown(message), "timestamp": timestamp})
         connection.close()
         return render_template("index.html", messages=messages, channel_name=channel_name)
 
